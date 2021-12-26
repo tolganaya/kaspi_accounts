@@ -21,6 +21,10 @@ class AccountDatabase(ABC):  # <---- INTERFACE
         ...
 
     @abstractmethod
+    def delete(self, id_: UUID) -> None:
+        ...
+
+    @abstractmethod
     def clear_all(self) -> None:
         ...
 

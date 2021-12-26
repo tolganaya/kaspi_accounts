@@ -36,6 +36,19 @@ class AccountDatabasePandas(AccountDatabase):
         self._objects = self._objects.append(new_row)
         self._objects.to_pickle("database.pk")
 
+
+    def delete(self, id_: UUID) -> None:
+        data1 = len(self._objects)
+        if id_ in list(self._objects["id"]):
+            self._objects = pd.DataFrame.drop(index=str(id_))
+            data2 = len(self._objects)
+            if data1 < data2:
+                print("Successfully deleted", str(id_))
+            else:
+                print("Something went wrong, I could not delete", str(id_))
+        else:
+            raise ObjectNotFound("Pandas error: object not found")
+
     def get_objects(self) -> List[Account]:
         result = []
         for index, row in self._objects.iterrows():

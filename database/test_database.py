@@ -13,10 +13,20 @@ from database.database import ObjectNotFound, AccountDatabase
 class TestAllDatabases:
     def test_all_dbs(self, database_connected: AccountDatabase) -> None:
         database_connected.clear_all()
-        account = Account.random()
-        account2 = Account.random()
-        database_connected.save(account)
-        database_connected.save(account2)
+        account = Account(
+            id_=uuid4()
+            , currency='USD'
+            , balance=87348
+        )
+        account2 = Account(
+            id_=uuid4()
+            , currency='KZT'
+            , balance=9875
+        )
+        #account = Account.random()
+        #account2 = Account.random()
+        database_connected.delete(account.id_)
+        database_connected.delete(account2.id_)
         got_account = database_connected.get_object(account.id_)
         assert account == got_account
 
@@ -29,7 +39,7 @@ class TestAllDatabases:
             assert isinstance(acc, Account)
 
         account.currency = "USD"
-        database_connected.save(account)
+        database_connected.delete(account.id_)
         got_account = database_connected.get_object(account.id_)
         assert account == got_account
 

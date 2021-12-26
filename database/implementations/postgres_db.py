@@ -45,6 +45,16 @@ class AccountDatabasePostgres(AccountDatabase):
                     """, (str(account.id_), account.currency, account.balance))
             self.conn.commit()
 
+    def delete(self, id_: UUID) -> None:
+        cur = self.conn.cursor()
+        data1 = cur.fetchall()
+        cur.execute("DELETE FROM accounts WHERE id = %s;", (str(id_)))
+        print("Trying to delete", str(id_))
+        data2 = cur.fetchall()
+        if len(data1) < len(data2):
+            print("Successfully deleted", str(id_))
+        self.conn.commit()
+
     def clear_all(self) -> None:
         cur = self.conn.cursor()
         cur.execute("DELETE FROM accounts;")
@@ -71,7 +81,7 @@ class AccountDatabasePostgres(AccountDatabase):
         print("Trying to find", str(id_))
         data = cur.fetchall()
         if len(data) == 0:
-            raise ObjectNotFound
+            raise ObjectNotFound("Postgres: Object not found")
         cols = [x[0] for x in cur.description]
         # This is the implementation without Pandas
         # for i in range(len(cols)):
@@ -89,3 +99,4 @@ class AccountDatabasePostgres(AccountDatabase):
 
         df = pd.DataFrame(data, columns=cols)
         return self.pandas_row_to_account(row=df.iloc[0])
+
